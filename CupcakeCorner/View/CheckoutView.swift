@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @ObservedObject var order: Order
+    @Binding var order: OrderStruct
     
     @State private var confirmationMessage = ""
     @State private var showingConfirmation = false
+    @State private var errorMessage = ""
     
     var body: some View {
         GeometryReader { geo in
@@ -29,6 +30,13 @@ struct CheckoutView: View {
                         self.placeOrder()
                     }
                     .padding()
+                    Spacer()
+                    Text(errorMessage)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: geo.size.width - 40, height: 60)
+                        .background(Color.red.opacity(errorMessage == "" ? 0 : 0.7))
+                        .cornerRadius(15)
                 }
             }
         }
@@ -50,21 +58,15 @@ struct CheckoutView: View {
         request.httpBody = encoded
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else {
-                print("No data in response: \(error?.localizedDescription ?? "Unknown error").")
+                self.errorMessage = "No data in response: \(error?.localizedDescription ?? "Unknown error")."
                 return
             }
             if let decodedOrder = try? JSONDecoder().decode(Order.self, from: data) {
-                self.confirmationMessage = "Your order for \(decodedOrder.quantity) X \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
+                self.confirmationMessage = "Your order for \(decodedOrder.quantity) \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
                 self.showingConfirmation = true
             } else {
-                print("Invalid response from server")
+                self.errorMessage = "Invalid response from server"
             }
         }.resume()
-    }
-}
-
-struct CheckoutView_Previews: PreviewProvider {
-    static var previews: some View {
-        CheckoutView(order: Order())
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddressView: View {
-    @ObservedObject var order: Order
+    @Binding var order: OrderStruct
     var body: some View {
         Form {
             Section {
@@ -16,21 +16,16 @@ struct AddressView: View {
                 TextField("Street", text: $order.streetAddress)
                 TextField("City", text: $order.city)
                 TextField("Zip code", text: $order.zip)
+                    .keyboardType(.decimalPad)
             }
             
             Section {
-                NavigationLink(destination: CheckoutView(order: order)) {
+                NavigationLink(destination: CheckoutView(order: $order)) {
                     Text("Check out")
                 }
             }
             .disabled(!order.hasValidAddress)
         }
         .navigationBarTitle("Delivery details", displayMode: .inline)
-    }
-}
-
-struct AddressView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddressView(order: Order())
     }
 }

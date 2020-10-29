@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var order = Order()
+    @State var order = OrderStruct()
     var body: some View {
         NavigationView {
             Form {
@@ -41,7 +41,7 @@ struct ContentView: View {
                 }
                 
                 Section {
-                    NavigationLink(destination: AddressView(order: order)) {
+                    NavigationLink(destination: AddressView(order: $order)) {
                         Text("Delivery details")
                     }
                 }

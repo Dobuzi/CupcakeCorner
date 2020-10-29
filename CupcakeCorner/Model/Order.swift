@@ -30,7 +30,11 @@ class Order: ObservableObject, Codable {
     @Published var zip = ""
     
     var hasValidAddress: Bool {
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
+        if name.count < 2 ||
+            streetAddress.isEmpty ||
+            city.isEmpty ||
+            Int(zip) == nil ||
+            zip.count != 5 {
             return false
         }
         return true
